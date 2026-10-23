@@ -8,7 +8,8 @@
 **Lead Investigator:** Principal Systems Architect & Expert Technical Historian  
 **Active Test Session ID:** `55b5eb19-b6c0-49fd-8958-84d0b52c7987`  
 **Reference Parent Session:** `89ab15e5-7053-41bb-b4c4-3de6e87cab6d`  
-**Status:** 100% Resolved, Empirically Verified, Fleet Aligned, 101/101 Tests Passing  
+**Status:** 100% Resolved, Empirically Verified, Fleet Aligned, 105/105 Tests Passing  
+**Production Release:** `v1.0.0` ([`https://github.com/MACCRE-2026/WALmaster.git`](https://github.com/MACCRE-2026/WALmaster.git))  
 
 ---
 
@@ -453,10 +454,10 @@ To ensure that no regressions were introduced into WALmaster, whole-codebase ver
 ```powershell
 # 1. Whole-Codebase Unit and Integration Test Suite:
 pytest -v
-# Result: 101 passed in 7.32s (100% GREEN)
+# Result: 105 passed in 11.56s (100% GREEN)
 
 # 2. Whole-Codebase Static Analysis and Type Verification:
-ruff check core tests telemetry
+ruff check core tests telemetry cli.py
 # Result: All checks passed! (0 errors, 100% CLEAN)
 ```
 
@@ -464,13 +465,15 @@ ruff check core tests telemetry
 - `tests/test_arbiter_twotier.py`: 17 tests verifying Lamport epoch tokens, lease barriers, and retry schedules.
 - `tests/test_bridge.py`: 3 tests verifying recovery bridges and CLI integrations.
 - `tests/test_buffer.py`: 6 tests verifying WAL ring buffers, crash recovery, and concurrent ingest.
+- `tests/test_cli.py`: 2 tests verifying CLI routers, argument parsers, and command executions.
 - `tests/test_full_trajectory_summary_sync.py`: 4 tests verifying the 4-tag workspace proto, 13-field summary schema, and backup restoration.
+- `tests/test_guard.py`: 2 tests verifying proactive checkpoint draining and Win32 presence lock handling.
 - `tests/test_healer.py`: 2 tests verifying event-sourced reconstruction and metadata salvaging.
 - `tests/test_lease_barrier.py`: 4 tests verifying uncoordinated writer contention and barrier aborts.
 - `tests/test_presence_reaper.py`: 3 tests verifying Win32 PID vitality checks and stale lock reaping.
 - `tests/test_provenance.py`: 9 tests verifying Subjective Logic opinions, Merkle roots, and attestation ledgers.
 - `tests/test_reprojection.py`: 5 tests verifying streaming projection from JSONL and rowid continuity.
-- `tests/test_sentinel.py`: 12 tests verifying registry reconciliation and runner process image verification.
+- `tests/test_sentinel.py`: 12 tests verifying registry reconciliation, Win32 exclusive lock tolerances, and runner process image verification.
 - `tests/test_step_metadata_and_project_preservation.py`: 3 tests verifying step timestamp synthesis and Tag 18 preservation.
 - `tests/test_summary_sync.py`: 5 tests verifying Protobuf varint codecs and Tier 3 roundtrips.
 - `tests/test_telemetry.py`: 3 tests verifying live concurrency monitoring loops and Markdown reporting.
