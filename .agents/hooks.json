@@ -1,0 +1,39 @@
+{
+  "command-safety-guard": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File B:\\CRSDL-MACCRE\\.agents\\scripts\\check_command_safety.ps1 -WorkspaceRoot B:\\WALmaster",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "boundary-protection-guard": {
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File B:\\CRSDL-MACCRE\\.agents\\scripts\\protect_boundaries.ps1 -WorkspaceRoot B:\\WALmaster",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "quality-gate": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "pwsh -ExecutionPolicy Bypass -File ./scripts/enforce_typing_and_gate.ps1",
+        "timeout": 30
+      }
+    ]
+  }
+}

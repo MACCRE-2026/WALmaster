@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Unit test / coverage reports
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Temporary / Scratch artifacts
+scratch/
+.tmp/
+*.tmp
+*.bak
+*.corrupt
+*.db
+*.db-wal
+*.db-shm
+*.pb
+*.pbtxt
+.development/
+.agents/scripts/run_claude_cli.ps1
+.agents/scripts/enforce_typing_and_gate.ps1
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Live databases and telemetry streams (keep source and tests only)
+telemetry/*.jsonl
+telemetry/*.json
+telemetry/TELEMETRY_SNAPSHOT.md

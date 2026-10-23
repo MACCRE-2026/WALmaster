@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "walmaster"
+version = "1.0.0"
+description = "Sovereign SQLite WAL Concurrency, Autonomous Healing, and Multi-Tier Synchronization Engine for Google Antigravity"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-or-later" }
+authors = [
+    { name = "MACCRE Systems", email = "licensing@maccre.systems" }
+]
+keywords = [
+    "sqlite",
+    "wal",
+    "antigravity",
+    "self-healing",
+    "concurrency",
+    "protobuf",
+    "electron",
+    "language-server",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Software Development :: Bug Tracking",
+]
+
+[project.scripts]
+walmaster = "cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
