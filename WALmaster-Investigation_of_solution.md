@@ -32,7 +32,7 @@ To resolve these interconnected failures, an engineering campaign was launched c
 * **100% Data Recovery:** Complete event-sourced reconstruction of missing steps from raw `transcript.jsonl` event logs, with full B-tree integrity validated (`PRAGMA integrity_check == 'ok'`).
 * **100% Project Folder Restoration:** All 25 previously displaced fleet sessions have been restored to their rightful project folders. When clicked in the UI, they remain firmly anchored in their project hierarchy.
 * **Root-Cause Mechanical Proof:** Uncovered the three-tier persistence architecture, the missing Protobuf tags (Tag 18 `project_id` and Tag 9 `workspaces`), the `2027y` zero-value timestamp defect, the zero-byte metadata blob trap, and the in-memory shutdown write-back trample.
-* **Zero Regressions:** 101/101 unit and integration tests passing (`pytest`), with 100% clean static analysis (`ruff check core tests telemetry`).
+* **Zero Regressions:** 105/105 unit and integration tests passing (`pytest`), with 100% clean static analysis (`ruff check core tests telemetry cli.py`).
 
 ---
 
@@ -73,7 +73,7 @@ When Antigravity operates in a hybrid edge-to-cloud configuration, the local des
 Under standard SQLite Write-Ahead Logging (WAL) mechanics, an automatic checkpoint can only run when all active read and write transactions drop to zero (`SQLITE_CHECKPOINT_PASSIVE`). Because remote RPC polling routines maintained open read handles continuously, **checkpoint starvation** occurred. Active conversation databases ballooned rapidly; active test session `55b5eb19-b6c0-49fd-8958-84d0b52c7987` reached **31.30 MB containing 8,013 uncommitted WAL frames**.
 
 When the user closed Antigravity or rebooted the host machine while thousands of frames were uncommitted:
-1. **Salt Mismatches:** On cold boot, SQLite re-initialized the shared memory file (`.db-shm`) with a fresh 32-bit salt. In session `98a54762-a31b-47d7-920a-4571175dffce`, 19 new turns (876 frames, 3.6 MB) had been written under salt `4278730968`. Because the fresh `.db-shm` had a mismatched salt, SQLite ignored the WAL frames entirely, dropping the conversation from step 2,020 back to step 2,000.
+1. **Salt Mismatches:** On cold boot, SQLite re-initialized the shared memory file (`.db-shm`) with a fresh 32-bit salt. In session `98a54762-a31b-47d7-920a-4571175dffce`, 19 new turns (876 frames, 3.44 MB) had been written under salt `4278730968`. Because the fresh `.db-shm` had a mismatched salt, SQLite ignored the WAL frames entirely, dropping the conversation from step 2,020 back to 2,001 committed rows (max index 2,000).
 2. **Page Checksum Failures:** Sudden shutdown during unfinalized frame writes produced torn page headers. SQLite's recovery process crashed with B-tree corruption:
    ```
    Tree 12 page 12: btreeInitPage() returns error code 11

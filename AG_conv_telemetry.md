@@ -160,7 +160,7 @@ pytest -v
 
 ### Summary of Discovered Failure Modes & Root Causes:
 1. **The Predicted Cold-Boot Crash (`55b5eb19-b6c0-49fd-8958-84d0b52c7987`):**
-   * Confirmed: Prior to shutdown, this session reached **31.3 MB (7,453 uncommitted frames)** in its `.db-wal`.
+   * Confirmed: Prior to shutdown, this session reached **31.3 MB (peak 8,013 frames; 7,453 frames at initial probe)** in its `.db-wal`.
    * On restart, SQLite's recovery process crashed on checksum mismatches, corrupting B-tree page pointers with error code 11 (`Tree 12 page 12: btreeInitPage() returns error code 11`).
    * **Remediation:** Successfully healed with WALmaster event-sourcing; all 713 steps reconstructed cleanly (`PRAGMA integrity_check == 'ok'`).
 2. **The "2027y" & Dropped Project Bug:**
@@ -169,7 +169,7 @@ pytest -v
    * The UI calculated `Current_Time - 0001-01-01` = **2027 years ago (`2027y`)** and stripped the project grouping folder.
    * **Remediation:** Hardened `core/healer.py` with backup-aware metadata salvaging, backup preservation protection, and synthetic fallback generation. Restored intact metadata across 21 affected sessions.
 3. **The Disconnected WAL Frames (`98a54762-a31b-47d7-920a-4571175dffce`):**
-   * During Stage 2, 19 new turns (876 WAL frames, 3.6 MB) were written to `.db-wal` under salt `4278730968`. On cold restart, Antigravity initialized a fresh `.db-shm` with a mismatched salt, causing SQLite to ignore the WAL and display only steps up to 2000.
+   * During Stage 2, 19 new turns (876 WAL frames, 3.44 MB) were written to `.db-wal` under salt `4278730968`. On cold restart, Antigravity initialized a fresh `.db-shm` with a mismatched salt, causing SQLite to ignore the WAL and display only 2,001 committed rows (max index 2000).
    * **Remediation:** Fully re-projected from `transcript.jsonl` to bring all 2,020 steps into the database.
 4. **NTFS Handle Leak in `telemetry.monitor`:**
    * Discovered that standard `with sqlite3.connect(...)` does not close file handles in Python on Windows NTFS, pinning `.db-wal` files and blocking clean live replacement.
@@ -241,7 +241,7 @@ Following the elimination of the `2027y` timestamp anomaly, conversations still 
 5. **Fleet Database Patch:**
    * Patched all 13 degraded conversation databases (`trajectory_metadata_blob`), `conversation_summaries.db`, and `agyhub_summaries_proto.pb`.
 6. **Codebase Verification:**
-   * 101/101 tests passing (`pytest -v`), 100% clean Ruff static analysis.
+   * 105/105 tests passing (`pytest -v`), 100% clean Ruff static analysis.
 
 
 ---

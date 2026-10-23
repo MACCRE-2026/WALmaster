@@ -39,11 +39,13 @@ def build_parser() -> argparse.ArgumentParser:
     # Command: heal
     heal_parser = subparsers.add_parser("heal", help="Heal corrupted conversation databases from transcript event logs")
     heal_parser.add_argument("session", nargs="?", default=None, help="Specific conversation UUID to heal")
+    heal_parser.add_argument("--session", dest="session_flag", default=None, help="Specific conversation UUID to heal (alias)")
     heal_parser.add_argument("--all", action="store_true", help="Scan and heal all corrupted conversations")
 
     # Command: sync
     sync_parser = subparsers.add_parser("sync", help="Synchronize conversations across all 3 persistence tiers")
     sync_parser.add_argument("session", nargs="?", default=None, help="Specific conversation UUID to sync")
+    sync_parser.add_argument("--session", dest="session_flag", default=None, help="Specific conversation UUID to sync (alias)")
     sync_parser.add_argument("--all", action="store_true", help="Synchronize all displaced conversations in registry")
 
     # Command: status
@@ -70,26 +72,28 @@ def main() -> int:
         return 0
 
     elif args.command == "heal":
-        if args.all or not args.session:
+        session = args.session_flag or args.session
+        if args.all or not session:
             logger.info("Scanning and healing all corrupted conversations across fleet...")
             results = scan_and_heal_all_corrupted()
             logger.info("Fleet scan completed. Healed %d conversations.", len(results))
             return 0
         else:
-            logger.info("Healing session: %s", args.session)
-            res = heal_and_restore_for_maccre(args.session)
+            logger.info("Healing session: %s", session)
+            res = heal_and_restore_for_maccre(session)
             print(f"Result: success={res['success']}, integrity={res['integrity_ok']}, total_steps={res['total_steps']}")
             return 0 if res["success"] else 1
 
     elif args.command == "sync":
-        if args.all or not args.session:
+        session = args.session_flag or args.session
+        if args.all or not session:
             logger.info("Executing fleet-wide 3-tier synchronization...")
             res = sync_all_summaries()
             logger.info("Sync complete. Checked: %d, Synchronized: %d", res["total_checked"], res["synchronized"])
             return 0
         else:
-            logger.info("Synchronizing conversation: %s", args.session)
-            res = sync_conversation_metadata(args.session)
+            logger.info("Synchronizing conversation: %s", session)
+            res = sync_conversation_metadata(session)
             print(f"Result: project_id={res['project_id']}, tier1={res['tier1_updated']}, tier2={res['tier2_updated']}, tier3={res['tier3_updated']}")
             return 0
 

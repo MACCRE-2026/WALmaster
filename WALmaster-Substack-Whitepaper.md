@@ -96,11 +96,12 @@ Under the proleptic Gregorian calendar, the difference between Year 0001 and the
 * Total Elapsed Days: $(1969 \times 365) + 477 = 719,162 \text{ days}$
 * Unix Epoch Delta: $-(719,162 \times 86,400) = \mathbf{-62,135,596,800} \text{ seconds}$
 
-On the wire, Go encodes $-62,135,596,800$ as a signed 64-bit Protobuf varint:
+Because `google.protobuf.Timestamp.seconds` is an `int64` field, Go encodes $-62,135,596,800$ on the wire using standard two's complement 64-bit varint representation (10 bytes):
 $$\mathbf{\backslash x80 \backslash x92 \backslash xb8 \backslash xc3 \backslash x98 \backslash xfe \backslash xff \backslash xff \backslash xff \backslash x01}$$
 
 When Electron calculates the relative time:
 $$\Delta t = \text{CurrentYear} - \text{TimestampYear} = 2028 - 1 = \mathbf{2027 \text{ years}}$$
+*(Where $2028$ was the system reference year evaluated by Antigravity's internal calendar daemon at the time of observation).*
 
 The UI faithfully rendered this span as **`2027y`**. The bug was not a UI flaw; it was the exact mathematical fingerprint of an uninitialized Go timestamp propagating across three storage tiers.
 
@@ -119,7 +120,7 @@ Decompiling `language_server.exe` revealed the culprit:
    In Go's `CortexWorkspaceMetadata` protobuf schema:
    * **Tag 1:** `workspace_folder_uri`
    * **Tag 2:** `workspace_folder_absolute_uri`
-   * **Tag 3:** (Internal identifier)
+   * **Tag 3:** Empty placeholder (`b""` bytes)
    * **Tag 4:** Git branch name (`"main"`)
    
    Previous recovery attempts only populated Tag 1. When `language_server.exe` called `SummaryToRecord`, it extracted paths exclusively via `ws.GetWorkspaceFolderAbsoluteUri()` (Tag 2). Finding it empty, it assigned `WorkspaceURIs = [""]`.
