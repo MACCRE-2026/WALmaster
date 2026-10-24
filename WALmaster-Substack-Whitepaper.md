@@ -28,7 +28,7 @@ Before modifying a single byte, we wanted to ensure we were not over-indexing on
 The findings were unequivocal:
 
 * **Pervasive Checkpoint Starvation:** Hundreds of developers on Windows and macOS reported that the Antigravity desktop runner held open database locks indefinitely, ballooning `.db-wal` files into hundreds of megabytes.
-* **The "2027y" Meme:** The `2027y` relative time indicator had become an infamous running joke in the Antigravity developer community, universally misunderstood as a timezone glitch or CSS bug.
+* **Impossible Relative Timestamps:** Developer forums and issue trackers documented bizarre date glitches where sessions displayed as last active thousands of years ago (`2026y`/`2027y ago`) or sorted erratically to the bottom of the history feed, resulting from unpopulated Protobuf timestamp fields defaulting to Year 0001 (`0001-01-01T00:00:00Z`).
 * **Sidebar Eviction Frustration:** Power users managing multiple repositories documented that conversations persistently lost their folder hierarchy, collapsing into a flat list upon restart.
 
 The diagnosis was systemic: Antigravity's local storage engine was suffering from an uncoordinated multi-tier persistence race.
